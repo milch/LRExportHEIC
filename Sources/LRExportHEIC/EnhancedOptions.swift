@@ -1,17 +1,6 @@
 import ConsoleKit
 import Foundation
 
-precedencegroup SingleFowardPipe {
-    associativity: left
-    higherThan: BitwiseShiftPrecedence
-}
-
-infix operator |> : SingleFowardPipe
-
-func |> <V,R>(value:V,function:((V)->R)) -> R {
-    function(value)
-}
-
 class Block<T> {
     let f: T
     init(_ f: T) { self.f = f }
@@ -20,7 +9,6 @@ class Block<T> {
 struct OptionContainer: Hashable, Equatable {
     let validator: AnyObject
     let option: EnhancedOption
-    let isRequired: Bool
 
     let uuid = UUID()
 
@@ -52,27 +40,6 @@ extension ArrayOfErrors: CustomStringConvertible where ErrorType: CustomStringCo
         case .array(let errors):
             return "Encountered these errors: \(errors.map { $0.description }.joined(separator: ", "))"
         }
-    }
-}
-
-func chainValidations<InType, ErrorType: Error>(
-    _ validations: ((InType) -> Result<Void, ErrorType>)...
-) -> ((InType) -> Result<Void, ArrayOfErrors<ErrorType>>){
-    return { opt in 
-        let results = validations.map { validation in 
-            return validation(opt)
-        }
-        let errors = results.compactMap { result -> ErrorType? in 
-            if case let .failure(error) = result {
-                return error
-            }
-            return nil
-        }
-        if errors.isEmpty {
-            return .success(())
-        }
-
-        return .failure(.array(errors))
     }
 }
 
@@ -118,11 +85,10 @@ extension Option: EnhancedOption {
         required: Bool = false
     ) {
         self.init(name: name, short: short, help: help, completion: completion)
-        let validator = chainValidations(
-                            validateRequiredOptionsPresent(required)
-                        )
+        let validator = required
+                        |> validateRequiredOptionsPresent
                         |> throwOnFailure
-        containers.append(OptionContainer(validator: Block(validator), option: self, isRequired: required))
+        containers.append(OptionContainer(validator: Block(validator), option: self))
     }
 }
 
@@ -161,48 +127,16 @@ extension Option where Value : Equatable {
         allowedValues: CType?
     ) where CType.Element == Value {
         self.init(name: name, short: short, help: help, completion: completion, required: required)
-        let validator = chainValidations(
-                            validateOnlyAllowedValues(allowedValues)
-                        )
+        let validator = allowedValues
+                        |> validateOnlyAllowedValues
                         |> throwOnFailure
-        containers.append(OptionContainer(validator: Block(validator), option: self, isRequired: required))
+        containers.append(OptionContainer(validator: Block(validator), option: self))
     }
 }
 
-// extension Option where Value : Comparable {
-//     func validateInRange(_ range: Range) -> (Option<Value>) -> Result<Void, Option<Value>.EnhancedOptionError> {
-//         return { option in
-//             guard let value = option.wrappedValue else {
-//                 return .success(())
-//             }
-//             if !allowed.isEmpty && !allowed.contains(value) {
-//                 return .failure(.argumentNotAllowed(allowedValues: allowed, actualValue: value))
-//             }
-
-//             return .success(())
-//         }
-//     }
-
-//     convenience public init(
-//         name: String,
-//         short: Character? = nil,
-//         help: String = "",
-//         completion: CompletionAction = .default,
-//         required: Bool = false,
-//         allowedValues: [Value] = []
-//     ) {
-//         self.init(name: name, short: short, help: help, completion: completion, required: required)
-//         let validator = chainValidations(
-//                             validateOnlyAllowedValues(allowedValues)
-//                         )
-//                         |> throwOnFailure
-//         containers.append(OptionContainer(validator: Block(validator), option: self, isRequired: required))
-//     }
-// }
-
 extension CommandSignature {
     func enhanceOptions() throws {
-        for option in containers { 
+        for option in containers {
             let validate = unsafeBitCast(option.validator, to: Block<(AnyObject) throws -> Void>.self)
             try validate.f(option.option as AnyObject)
         }
