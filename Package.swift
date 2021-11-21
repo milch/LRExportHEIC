@@ -4,20 +4,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "LRExportHEIC",
-    platforms: [.macOS(.v12)],
-    dependencies: [
-        .package(url: "https://github.com/vapor/console-kit.git", from: "4.2.7")
-    ],
-    targets: [
-        .executableTarget(
-            name: "LRExportHEIC",
-            dependencies: [
-                .product(name: "ConsoleKit", package: "console-kit")
-            ]
-            ),
-        .testTarget(
-            name: "LRExportHEICTests",
-            dependencies: ["LRExportHEIC"]),
-    ]
+  name: "LRExportHEIC",
+  platforms: [.macOS(.v12)],
+  dependencies: [
+    .package(url: "https://github.com/vapor/console-kit.git", from: "4.2.7")
+  ],
+  targets: [
+    .executableTarget(
+      name: "LRExportHEIC",
+      dependencies: [
+        .product(name: "ConsoleKit", package: "console-kit")
+      ]
+    ),
+    .testTarget(
+      name: "LRExportHEICTests",
+      dependencies: ["LRExportHEIC"]),
+  ]
 )
