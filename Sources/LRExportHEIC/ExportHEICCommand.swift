@@ -94,7 +94,7 @@ struct ExportHEICCommand: Command {
 
     let ctx = CIContext()
     let opts =
-      [kCGImageDestinationLossyCompressionQuality: signature.quality]
+      [kCGImageDestinationLossyCompressionQuality: signature.quality!]
       as [CIImageRepresentationOption: Any]
 
     if shouldUseHEIF10 {
