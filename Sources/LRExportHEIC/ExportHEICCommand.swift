@@ -73,10 +73,7 @@ struct ExportHEICCommand: Command {
     guard let inputImage = inputImage else {
       throw ExportHEICError.couldNotReadImage
     }
-    var outputFileURL = signature.outputFileURL
-    if outputFileURL.pathExtension != "heic" {
-      outputFileURL.appendPathExtension("heic")
-    }
+    let outputFileURL = signature.outputFileURL
 
     let bitDepth = inputImage.properties["Depth"] as? Int ?? 8
     let colorSpace =
@@ -85,6 +82,7 @@ struct ExportHEICCommand: Command {
 
     if signature.verbose {
       context.console.print("Input URL: \(signature.inputFileURL!)")
+      context.console.print("Output File: \(signature.outputFile)")
       context.console.print("Output URL: \(outputFileURL)")
       context.console.print("Input Colorspace: \(inputImage.colorSpace!)")
       context.console.print("Output Colorspace: \(colorSpace)")
