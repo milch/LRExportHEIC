@@ -13,6 +13,8 @@ jobs:
           key: ${{ runner.os }}-build-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-build-
+      - name: Print Xcode version
+        run: xcodebuild -version
       - name: Build the plugin
         run: ./build.sh
       - name: Upload a Build Artifact
