@@ -10,7 +10,8 @@ rsync -a ./LRPlugin/ plugin/ExportHEIC.lrplugin
 cp ./.build/apple/Products/Release/LRExportHEIC plugin/ExportHEIC.lrplugin/LRExportHEIC
 
 # Update version with latest git tag
-GIT_VERSION=$(git describe --tags)
+git fetch --tags
+GIT_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
 MAJOR_VERSION=$(echo $GIT_VERSION | cut -f 1 -d . | tr -d 'v')
 MINOR_VERSION=$(echo $GIT_VERSION | cut -f 2 -d .)
 PATCH_VERSION=$(echo $GIT_VERSION | cut -f 3 -d .)
