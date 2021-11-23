@@ -15,3 +15,14 @@ jobs:
         with:
           name: plugin
           path: plugin
+  release: 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with: 
+          name: plugin
+      - uses: fnkr/github-action-ghr@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GHR_PATH: plugin/
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
