@@ -17,6 +17,17 @@ jobs:
         run: xcodebuild -version
       - name: Build the plugin
         run: ./build.sh
+      - name: Sign plugin executable
+        run: ./sign_with_temp_keychain.sh plugin/ExportHEIC.lrplugin/LRExportHEIC
+        env:
+          SIGNING_CERT: ${{ secrets.SIGNING_CERT }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
+      - name: Notarize plugin executable
+        run: ./notarize.sh plugin/ExportHEIC.lrplugin/LRExportHEIC
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+          API_KEY_ISSUER: ${{ secrets.API_KEY_ISSUER }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
