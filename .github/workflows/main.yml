@@ -9,8 +9,10 @@ jobs:
       - name: Cache .build folder
         uses: actions/cache@v2
         with:
-          path: .build
-          key: ${{ runner.os }}-build
+          path: .build    
+          key: ${{ runner.os }}-build-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
       - name: Build the plugin
         run: ./build.sh
       - name: Upload a Build Artifact
