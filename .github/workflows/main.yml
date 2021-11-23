@@ -29,7 +29,9 @@ jobs:
         with: 
           name: plugin
       - name: List downloaded files
-        run: ls -R
+        run: ls -lR
+      - name: Set executable bit in plugin executable
+        run: chmod +x ExportHEIC.lrplugin/LRExportHEIC
       - uses: fnkr/github-action-ghr@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
