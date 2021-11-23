@@ -6,4 +6,4 @@ xcuserdata/
 DerivedData/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 
-ExportHEIC.lrplugin
+plugin
