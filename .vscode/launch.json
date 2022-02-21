@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug LRExportHEIC",
+      "program": "${workspaceFolder:LRExportHEIC}/.build/debug/LRExportHEIC",
+      "args": [],
+      "cwd": "${workspaceFolder:LRExportHEIC}",
+      "preLaunchTask": "swift: Build Debug LRExportHEIC"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Release LRExportHEIC",
+      "program": "${workspaceFolder:LRExportHEIC}/.build/release/LRExportHEIC",
+      "args": [],
+      "cwd": "${workspaceFolder:LRExportHEIC}",
+      "preLaunchTask": "swift: Build Release LRExportHEIC"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Test LRExportHEIC",
+      "program": "/Applications/Xcode.app/Contents/Developer/usr/bin/xctest",
+      "args": [
+        ".build/debug/LRExportHEICPackageTests.xctest"
+      ],
+      "cwd": "${workspaceFolder:LRExportHEIC}",
+      "preLaunchTask": "swift: Build All"
+    }
+  ]
+}
