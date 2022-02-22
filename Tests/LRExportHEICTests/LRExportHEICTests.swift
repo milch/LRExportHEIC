@@ -4,6 +4,8 @@ import class Foundation.Bundle
 
 final class LRExportHEICTests: XCTestCase {
   func testExample() throws {
+    throw XCTSkip("This test is not correctly written.")
+
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct
     // results.
