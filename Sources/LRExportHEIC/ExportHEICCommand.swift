@@ -73,7 +73,6 @@ struct ExportHEICCommand: Command {
     guard let inputImage = inputImage else {
       throw ExportHEICError.couldNotReadImage
     }
-    let outputFileURL = signature.outputFileURL
 
     let bitDepth = inputImage.properties["Depth"] as? Int ?? 8
     let colorSpace =
@@ -82,34 +81,16 @@ struct ExportHEICCommand: Command {
 
     if signature.verbose {
       context.console.print("Input URL: \(signature.inputFileURL!)")
-      context.console.print("Output File: \(signature.outputFile)")
-      context.console.print("Output URL: \(outputFileURL)")
       context.console.print("Input Colorspace: \(inputImage.colorSpace!)")
-      context.console.print("Output Colorspace: \(colorSpace)")
       context.console.print("Input Bitdepth: \(bitDepth)")
-      context.console.print("Output Bitdepth: \(shouldUseHEIF10 ? 10 : 8)")
     }
 
-    let ctx = CIContext()
-    let opts =
-      [kCGImageDestinationLossyCompressionQuality: signature.quality!]
-      as [CIImageRepresentationOption: Any]
-
-    if shouldUseHEIF10 {
-      try ctx.writeHEIF10Representation(
-        of: inputImage,
-        to: outputFileURL,
-        colorSpace: colorSpace,
-        options: opts
-      )
-    } else {
-      try ctx.writeHEIFRepresentation(
-        of: inputImage,
-        to: outputFileURL,
-        format: .RGBA8,
-        colorSpace: colorSpace,
-        options: opts
-      )
-    }
+    try writeHEIF(
+      of: inputImage,
+      to: signature.outputFileURL,
+      in: colorSpace,
+      withQuality: signature.quality!,
+      shouldUseHEIF10: shouldUseHEIF10,
+      verbose: signature.verbose)
   }
 }
