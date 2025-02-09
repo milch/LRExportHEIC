@@ -16,6 +16,7 @@ func writeHEIF(
     print("Output Quality: \(quality)")
     print("Output Colorspace: \(colorSpace)")
     print("Output Bitdepth: \(shouldUseHEIF10 ? 10 : 8)")
+    print("Output is HDR: \(colorSpace.isHDR())")
   }
 
   if shouldUseHEIF10 {

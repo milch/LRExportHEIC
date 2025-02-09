@@ -44,11 +44,13 @@ struct ExportHEICCommand: Command {
 
     @Option(
       name: "color-space",
-      help: "Name of the output color space. Omit to use input image color space",
+      help:
+        "Name of the output color space. Omit to use input image color space. Pass an HDR color space name to enable HDR processing.",
       allowedValues: [
         CGColorSpace.sRGB,
         CGColorSpace.displayP3,
         CGColorSpace.adobeRGB1998,
+        CGColorSpace.displayP3_PQ,
       ].map { ($0 as String).replacingOccurrences(of: "kCGColorSpace", with: "") })
     var colorSpaceName: String?
 
@@ -89,20 +91,28 @@ struct ExportHEICCommand: Command {
     try signature.enhanceOptions()
     try signature.checkOptions()
 
-    let inputImage = CIImage(contentsOf: signature.inputFileURL)
+    let inputImage = CIImage(contentsOf: signature.inputFileURL, options: [:])
     guard let inputImage = inputImage else {
       throw ExportHEICError.couldNotReadImage
     }
 
-    let bitDepth = inputImage.properties["Depth"] as? Int ?? 8
     let colorSpace =
       signature.colorSpace ?? inputImage.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB)!
-    let shouldUseHEIF10 = bitDepth > 8
+    let shouldUseHEIF10: Bool
+    let bitDepth: Int
+    if colorSpace.isHDR() {
+      bitDepth = inputImage.properties["Depth"] as? Int ?? 32
+      shouldUseHEIF10 = true
+    } else {
+      bitDepth = inputImage.properties["Depth"] as? Int ?? 8
+      shouldUseHEIF10 = bitDepth > 8
+    }
 
     if signature.verbose {
       context.console.print("Input URL: \(signature.inputFileURL!)")
       context.console.print("Input Colorspace: \(inputImage.colorSpace!)")
       context.console.print("Input Bitdepth: \(bitDepth)")
+      context.console.print("Input is HDR: \(inputImage.colorSpace!.isHDR())")
     }
 
     if signature.quality != nil {

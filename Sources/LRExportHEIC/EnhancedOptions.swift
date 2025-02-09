@@ -1,7 +1,7 @@
 import ConsoleKit
 import Foundation
 
-var validationFunctions: [() throws -> Void] = []
+nonisolated(unsafe) var validationFunctions: [() throws -> Void] = []
 
 protocol EnhancedOption {
   var isPresent: Bool { get }
